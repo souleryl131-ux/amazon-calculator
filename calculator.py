@@ -7,6 +7,36 @@ import io
 # ==========================================
 st.set_page_config(page_title="亚马逊利润计算", layout="wide", page_icon="💰")
 
+# ==========================================
+# 🛑 新增：简易密码验证系统
+# ==========================================
+def check_password():
+    """如果不输入正确密码，程序就会卡在这里，不往下执行"""
+    
+    # 定义你的密码（你可以随便改）
+    CORRECT_PASSWORD = "xjsb" 
+
+    # 如果已经在 session 中标记为登录成功，直接放行
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # 显示输入框
+    st.markdown("### 🔒 请输入访问密码")
+    password_input = st.text_input("密码", type="password")
+
+    if password_input:
+        if password_input == CORRECT_PASSWORD:
+            st.session_state["password_correct"] = True
+            st.rerun()  # 密码正确，刷新页面进入
+        else:
+            st.error("❌ 密码错误，请重试")
+    
+    return False
+
+# 如果密码检查没通过，直接停止运行下面的所有代码
+if not check_password():
+    st.stop()
+
 # 默认汇率
 DEFAULT_RATES = {
     "USD": 7.20, "CAD": 5.30, "GBP": 9.10,
@@ -443,4 +473,5 @@ else:
     if needs_rerun: st.rerun()
 
     csv = edited_matrix.to_csv(index=False, encoding='utf-8-sig')
+
     st.download_button("📥 导出结果 CSV", csv, "profit_analysis.csv")
