@@ -14,7 +14,7 @@ def check_password():
     """如果不输入正确密码，程序就会卡在这里，不往下执行"""
     
     # 定义你的密码（你可以随便改）
-    CORRECT_PASSWORD = "xjsb" 
+    CORRECT_PASSWORD = "xjdsb" 
 
     # 如果已经在 session 中标记为登录成功，直接放行
     if st.session_state.get("password_correct", False):
@@ -475,3 +475,4 @@ else:
     csv = edited_matrix.to_csv(index=False, encoding='utf-8-sig')
 
     st.download_button("📥 导出结果 CSV", csv, "profit_analysis.csv")
+
