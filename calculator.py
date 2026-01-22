@@ -363,18 +363,41 @@ st.caption("操作说明：左侧可修改汇率。下方**表1**填产品参数
 st.subheader("1. 产品基础参数")
 if 'product_db' not in st.session_state:
     st.session_state.product_db = pd.DataFrame([
-        {"SKU": "A001", "采购成本(¥)": 20.0, "重量(g)": 300, "长": 20, "宽": 15, "高": 5},
+        {"SKU": "A001", "采购成本(¥)": 20.0, "重量(g)": 300, "长": 20.0, "宽": 15.0, "高": 5.0},
     ])
 
 edited_products = st.data_editor(
     st.session_state.product_db,
     num_rows="dynamic",
     use_container_width=True,
-    key="editor_products"
+    key="editor_products",
+    # ⚠️ 修改点2：增加 column_config，精确控制小数位和步长
+    column_config={
+        "长": st.column_config.NumberColumn(
+            label="长 (cm)", 
+            min_value=0, 
+            step=0.1,       # 允许输入 0.1 的倍数
+            format="%.1f"   # 显示1位小数
+        ),
+        "宽": st.column_config.NumberColumn(
+            label="宽 (cm)", 
+            min_value=0, 
+            step=0.1, 
+            format="%.1f"
+        ),
+        "高": st.column_config.NumberColumn(
+            label="高 (cm)", 
+            min_value=0, 
+            step=0.1, 
+            format="%.1f"
+        ),
+        "采购成本(¥)": st.column_config.NumberColumn(label="采购成本(¥)", step=0.1, format="%.2f"),
+        "重量(g)": st.column_config.NumberColumn(label="重量(g)", step=1),
+    }
 )
 
 # --- 表2：动态计算矩阵 ---
-st.subheader("2. 售价与利润矩阵 (实时计算)")
+st.subheader("2. 售价与利润 (实时计算)")
 
 if not selected_countries:
     st.warning("请在左侧选择至少一个目标市场")
@@ -475,4 +498,5 @@ else:
     csv = edited_matrix.to_csv(index=False, encoding='utf-8-sig')
 
     st.download_button("📥 导出结果 CSV", csv, "profit_analysis.csv")
+
 
